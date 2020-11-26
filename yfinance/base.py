@@ -322,12 +322,13 @@ class TickerBase():
 
             s = _pd.DataFrame(index=[0], data=d)[-1:].T
             s.columns = ['Value']
-            s.index.name = '%.f-%.f' % (
-                s[s.index == 'ratingYear']['Value'].values[0],
-                s[s.index == 'ratingMonth']['Value'].values[0])
+            if len(s.Value) > 0:
+                s.index.name = '%.f-%.f' % (
+                    s[s.index == 'ratingYear']['Value'].values[0],
+                    s[s.index == 'ratingMonth']['Value'].values[0])
 
-            self._sustainability = s[~s.index.isin(
-                ['maxAge', 'ratingYear', 'ratingMonth'])]
+                self._sustainability = s[~s.index.isin(
+                    ['maxAge', 'ratingYear', 'ratingMonth'])]
 
         # info (be nice to python 2)
         self._info = {}
@@ -337,7 +338,7 @@ class TickerBase():
             if isinstance(data.get(item), dict):
                 self._info.update(data[item])
 
-        self._info['regularMarketPrice'] = self._info['regularMarketOpen']
+        self._info['regularMarketPrice'] = self._info.get('regularMarketOpen', None)
         self._info['logo_url'] = ""
         try:
             domain = self._info['website'].split(
